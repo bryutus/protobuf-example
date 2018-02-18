@@ -12,9 +12,13 @@ func TestPromptAddressReturnsAddress(t *testing.T) {
 Example Name
 name@example.com
 123-456-7890
+home
 222-222-2222
+mobile
 111-111-1111
+work
 777-777-7777
+unknown
 
 `
 	got, err := promptForAddress(strings.NewReader(in))
@@ -32,10 +36,10 @@ name@example.com
 	}
 
 	want := []*pb.Person_PhoneNumber{
-		{Number: "123-456-7890"},
-		{Number: "222-222-2222"},
-		{Number: "111-111-1111"},
-		{Number: "777-777-7777"},
+		{Number: "123-456-7890", Type: pb.Person_HOME},
+		{Number: "222-222-2222", Type: pb.Person_MOBILE},
+		{Number: "111-111-1111", Type: pb.Person_WORK},
+		{Number: "777-777-7777", Type: pb.Person_MOBILE},
 	}
 
 	if len(got.Phones) != len(want) {
