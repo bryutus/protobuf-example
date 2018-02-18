@@ -63,6 +63,25 @@ func promptForAddress(r io.Reader) (*pb.Person, error) {
 			Number: phone,
 		}
 
+		fmt.Printf("Is this a mobile, home or work phone?\n")
+		ptype, err := rd.ReadString('\n')
+		if err != nil {
+			return p, err
+		}
+		ptype = strings.TrimSpace(ptype)
+
+		// A proto enum results in a Go constant for each enum value.
+		switch ptype {
+		case "mobile":
+			pn.Type = pb.Person_MOBILE
+		case "home":
+			pn.Type = pb.Person_HOME
+		case "work":
+			pn.Type = pb.Person_WORK
+		default:
+			fmt.Printf("Unknown phone type %q. Using default.\n", ptype)
+		}
+
 		// A repeated proto field mapps to a slice field in Go. We can
 		// append to it like any other slice.
 		p.Phones = append(p.Phones, pn)
