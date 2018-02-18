@@ -42,6 +42,32 @@ func promptForAddress(r io.Reader) (*pb.Person, error) {
 	}
 	p.Email = strings.TrimSpace(email)
 
+	for {
+		fmt.Print("Enter a phone number (or leave blank to finish):\n")
+		phone, err := rd.ReadString('\n')
+		if err != nil {
+			break
+		}
+
+		phone = strings.TrimSpace(phone)
+		if phone == "" {
+			break
+		}
+
+		// The PhoneNumber message type is nested within the Person
+		// message in the .proto file. This results in a Go struct
+		// named using name of the parent prefixed to the name of
+		// the nested message. Just s with pb.Person, it can be
+		// created like any other struct.
+		pn := &pb.Person_PhoneNumber{
+			Number: phone,
+		}
+
+		// A repeated proto field mapps to a slice field in Go. We can
+		// append to it like any other slice.
+		p.Phones = append(p.Phones, pn)
+	}
+
 	return p, nil
 }
 
