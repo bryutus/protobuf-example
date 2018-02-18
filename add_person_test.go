@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	pb "github.com/bryutus/protobuf-tutorial/tutorial"
+	"github.com/golang/protobuf/proto"
 )
 
 func TestPromptAddressReturnsAddress(t *testing.T) {
@@ -44,5 +45,12 @@ unknown
 
 	if len(got.Phones) != len(want) {
 		t.Errorf("want %d phone numbers, got %d", len(want), len(got.Phones))
+	}
+
+	phones := len(got.Phones)
+	for i := 0; i < phones; i++ {
+		if !proto.Equal(got.Phones[i], want[i]) {
+			t.Errorf("want phone %q, got %q", *want[i], *got.Phones[i])
+		}
 	}
 }
