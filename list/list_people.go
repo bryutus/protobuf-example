@@ -1,13 +1,43 @@
 package main
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/golang/protobuf/proto"
 	pb "github.com/bryutus/protobuf-tutorial/tutorial"
+	"github.com/golang/protobuf/proto"
 )
+
+func writePerson(w io.Writer, p *pb.Person) {
+	fmt.Fprintln(w, "Person ID:", p.Id)
+	fmt.Fprintln(w, "  Name:", p.Name)
+
+	if p.Email != "" {
+		fmt.Fprintln(w, "  E-mail address:", p.Email)
+	}
+
+	for _, pn := range p.Phones {
+		var ptype string
+		switch pn.Type {
+		case pb.Person_MOBILE:
+			ptype = "Mobile"
+		case pb.Person_HOME:
+			ptype = "Home"
+		case pb.Person_WORK:
+			ptype = "Work"
+		}
+		fmt.Fprintf(w, "  %s Phone #: %s\n", ptype, pn.Number)
+	}
+}
+
+func listPeople(w io.Writer, book *pb.AddressBook) {
+	for _, p := range book.People {
+		writePerson(w, p)
+	}
+}
 
 // Main reads the entire address book from a file and prints all the
 // information inside.
@@ -29,4 +59,6 @@ func main() {
 		log.Fatalln("Failed to parse address book:", err)
 	}
 	// [END unmarshal_proto]
+
+	listPeople(os.Stdout, book)
 }
